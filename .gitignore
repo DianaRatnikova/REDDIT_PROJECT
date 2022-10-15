@@ -3,7 +3,10 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# My own files
 config_auth.py
+*.jpg
+result_data/
 
 # C extensions
 *.so

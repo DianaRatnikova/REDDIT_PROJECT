@@ -18,3 +18,6 @@ SQLAlchemy==1.4.41
 stem==1.8.1
 urllib3==1.26.12
 Werkzeug==2.2.2
+Faker
+psycopg2-binary
+sqlalchemy
