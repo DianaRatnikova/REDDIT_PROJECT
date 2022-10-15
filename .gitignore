@@ -6,6 +6,7 @@ __pycache__/
 # My own files
 config_auth.py
 *.jpg
+*.png
 result_data/
 
 # C extensions
