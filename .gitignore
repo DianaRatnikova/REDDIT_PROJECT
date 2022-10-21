@@ -9,6 +9,7 @@ config_auth.py
 *.png
 *.csv
 result_data/
+models_main.py
 
 # C extensions
 *.so

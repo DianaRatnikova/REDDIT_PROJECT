@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 
 
 class Top_subreddits(Base):
-    __tablename__ = 'top_subreddits'
+    __tablename__ = 'top_subreddit'
     id = Column(Integer, primary_key=True)
     subreddit = Column(String)
     author_subreddit = Column(String)
@@ -18,7 +18,7 @@ class Top_subreddits(Base):
 
 
 class Comments(Base):
-    __tablename__ = 'comments'
+    __tablename__ = 'comment'
 
     id = Column(Integer, primary_key=True)
     top_subreddit_id = Column(Integer, ForeignKey(Top_subreddits.id), index=True, nullable=False)

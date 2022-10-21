@@ -11,12 +11,16 @@ if __name__ == "__main__":
     headers = get_headers()
 
     LIMIT = int(input("Введите количество топ-новостей: "))
+    logging.info('make_top_subreddit_requests(LIMIT, headers):')
     result_subreddit = make_top_subreddit_requests(LIMIT, headers)
+    logging.info('make_all_comments_request(result_subreddit, headers)')
     make_all_comments_request(result_subreddit, headers)
+    logging.info('construct_comments_url(result_subreddit)')
     comments_url_list = construct_comments_url(result_subreddit)
+    logging.info('write_top_subreddit_to_csv(result_subreddit, comments_url_list)')
     write_top_subreddit_to_csv(result_subreddit, comments_url_list)
     
-    logging.info('Создание таблицы БД top_subreddits и comments')
+    logging.info('Creating database top_subreddits and comments')
     create_models()
-    logging.info('Загрузка данных в таблицы  top_subreddits и comments')
+    logging.info('Loader data to tables  top_subreddits and comments')
     load_data_to_models()
