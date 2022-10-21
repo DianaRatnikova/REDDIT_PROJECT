@@ -24,6 +24,7 @@ class Comments(Base):
     top_subreddit_id = Column(Integer, ForeignKey(Top_subreddits.id), index=True, nullable=False)
     author_comment = Column(String)
     body = Column(String)
+    mood = Column(String)
     url_comment = Column(String)
     nesting = Column(Integer)
     identificator = Column(String)

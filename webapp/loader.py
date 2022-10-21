@@ -58,7 +58,7 @@ def save_comments(all_data, top_subreddit_unique):
     comments_unique = []
     for row in all_data:
         if row['identificator'] not in processed:
-            comment = {'author_comment': row['author_comment'], 'body': row['body'], 'url_comment': row['url_comment'],
+            comment = {'author_comment': row['author_comment'], 'body': row['body'], 'mood': '', 'url_comment': row['url_comment'],
             'nesting': row['nesting'], 'identificator': row['identificator'],
               }
             comment['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
