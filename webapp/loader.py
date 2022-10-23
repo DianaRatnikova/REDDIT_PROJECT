@@ -5,7 +5,7 @@ import time
 import webapp.config_auth
 from webapp.print_reddit_data import mkdir_for_results
 from webapp.models import Top_subreddits, Comments, Comments_edit
-
+from sqlalchemy import distinct
 import logging
 
 def read_top_subreddit_csv(filename):
@@ -84,12 +84,13 @@ def save_comments(all_data, top_subreddit_unique):
 def save_comments_edits(all_data,top_subreddit_unique):
     processed = []
     comments_edits_unique = []
-     
-    query = db_session.query(Comments_edit.identificator_comment.distinct().label("identificator_comment"))
-    identificators = [row for row in query.all()]
-
+    query = db_session.query(Comments_edit.identificator_comment).distinct()
+ 
+    identificators = []
+    for id in query:
+        identificators.append(id[0])
     print(f"{identificators = }")
-    print(f"{query.all() = }")
+
     for row in all_data:
         if row['edition_num'] not in processed:
             comment_edit = {'body': row['body'], 'mood': '', 'identificator_comment': row['identificator_comment'],
@@ -102,7 +103,6 @@ def save_comments_edits(all_data,top_subreddit_unique):
                     processed.append(row['edition_num'])
 
             for id in query.all():
-                print(f"{id =}")
                 if comment_edit['identificator_comment'] == id:
                     if comment_edit['edition_num'] in db_session.query(Comments_edit.edition_num):
                         print("No more edited!")

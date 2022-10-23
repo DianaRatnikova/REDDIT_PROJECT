@@ -1,15 +1,32 @@
 from webapp.authentication import get_headers
-from webapp.reddit_requests import make_top_subreddit_requests, make_all_comments_request, construct_comments_url
-from webapp.print_reddit_data import write_top_subreddit_to_csv
+import webapp.config_auth
 from webapp.loader import load_data_to_models
 from webapp.models import create_models
-
+from webapp.print_reddit_data import write_top_subreddit_to_csv
+from webapp.reddit_requests import make_top_subreddit_requests, make_all_comments_request, construct_comments_url
 import logging
+import os
+
+
+def delete_file(filename):
+    if os.path.isfile(filename):
+        os.remove(filename)
+
+def delete_dir_with_old_results(FOLDER_NAME):
+    if os.path.isdir(FOLDER_NAME):
+        os.chdir(FOLDER_NAME)
+        delete_file('comments.csv')
+        delete_file('comments_edition.csv')
+        delete_file('top_subreddits.csv')
+        os.chdir("..")
+        os.rmdir(FOLDER_NAME)
+
+
 
 if __name__ == "__main__":
     logging.basicConfig(filename='loginfo.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
     headers = get_headers()
-
+    delete_dir_with_old_results('result_data')
     LIMIT = int(input("Введите количество топ-новостей: "))
     logging.info('make_top_subreddit_requests(LIMIT, headers):')
     result_subreddit = make_top_subreddit_requests(LIMIT, headers)
