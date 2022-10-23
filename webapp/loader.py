@@ -84,15 +84,34 @@ def save_comments(all_data, top_subreddit_unique):
 def save_comments_edits(all_data,top_subreddit_unique):
     processed = []
     comments_edits_unique = []
+     
+    query = db_session.query(Comments_edit.identificator_comment.distinct().label("identificator_comment"))
+    identificators = [row for row in query.all()]
+
+    print(f"{identificators = }")
+    print(f"{query.all() = }")
     for row in all_data:
         if row['edition_num'] not in processed:
             comment_edit = {'body': row['body'], 'mood': '', 'identificator_comment': row['identificator_comment'],
             'edition_num': row['edition_num'],'url_comment': row['url_comment'],
             }
+
+            if not query.all():
+                    comment_edit['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
+                    comments_edits_unique.append(comment_edit)
+                    processed.append(row['edition_num'])
+
+            for id in query.all():
+                print(f"{id =}")
+                if comment_edit['identificator_comment'] == id:
+                    if comment_edit['edition_num'] in db_session.query(Comments_edit.edition_num):
+                        print("No more edited!")
+                    else:
+                        print("Edited!")
      #       comments_edits_unique['identificator_comment'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
-            comment_edit['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
-            comments_edits_unique.append(comment_edit)
-            processed.append(row['edition_num'])
+                        comment_edit['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
+                        comments_edits_unique.append(comment_edit)
+                        processed.append(row['edition_num'])
     db_session.bulk_insert_mappings(Comments_edit, comments_edits_unique, return_defaults=True)
     db_session.commit()
     return comments_edits_unique
