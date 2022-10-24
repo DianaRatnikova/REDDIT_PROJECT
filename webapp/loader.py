@@ -7,24 +7,28 @@ from webapp.print_reddit_data import mkdir_for_results
 from webapp.models import Top_subreddits, Comments, Comments_edit
 #from sqlalchemy import distinct
 import logging
+import webapp.config
+
+def read_csv(filename, fields):
+    with open(filename, 'r', encoding='utf-8') as f:
+        reader = csv.DictReader(f, fields, delimiter=';')
+        subreddit_data = list(reader)
+        return subreddit_data
+
 
 def read_top_subreddit_csv(filename):
+    fields = ['subreddit',  'author_subreddit', 'title', 'url_subreddit']
     with open(filename, 'r', encoding='utf-8') as f:
-        fields = ['subreddit',  'author_subreddit', 'title', 'url_subreddit']
         reader = csv.DictReader(f, fields, delimiter=';')
-        subreddit_data = []
-        for row in reader:
-            subreddit_data.append(row)
+        subreddit_data = list(reader)
         return subreddit_data
 
 
 def read_comments_csv(filename):
+    fields = ['identificator',  'author_comment', 'body', 'url_comment', 'nesting']    
     with open(filename, 'r', encoding='utf-8') as f:
-        fields = ['identificator',  'author_comment', 'body', 'url_comment', 'nesting']
         reader = csv.DictReader(f, fields, delimiter=';')
-        comments_data = []
-        for row in reader:
-            comments_data.append(row)
+        comments_data = list(reader)
         return comments_data
 
 
@@ -32,9 +36,7 @@ def read_comments_edits_csv(filename):
     with open(filename, 'r', encoding='utf-8') as f:
         fields = ['identificator_comment',  'body', 'edition_num','url_comment']
         reader = csv.DictReader(f, fields, delimiter=';')
-        comments_edits = []
-        for row in reader:
-            comments_edits.append(row)
+        comments_edits = list(reader)
         return comments_edits
 
 
@@ -46,6 +48,7 @@ def save_top_subreddit(all_data):
     urls = []
     for url in query_url:
         urls.append(url[0])
+    print("urls = ", '\n'.join(urls))
 
     for row in all_data:
         if row['url_subreddit'] not in processed:
@@ -82,8 +85,8 @@ def save_comments(all_data, top_subreddit_unique):
 
     for row in all_data:
         if row['identificator'] not in processed:
-            comment = {'author_comment': row['author_comment'], 'body': row['body'], 'mood': '', 'url_comment': row['url_comment'],
-            'nesting': row['nesting'], 'identificator': row['identificator']
+            comment = {'author_comment': row['author_comment'], 'body': row['body'], 'mood': '', 
+            'url_comment': row['url_comment'], 'nesting': row['nesting'], 'identificator': row['identificator']
               }
             comment['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
 
@@ -168,9 +171,12 @@ def load_data_to_models():
 
 if __name__ == '__main__':
     mkdir_for_results(webapp.config_auth.FOLDER_NAME)
-    subreddit_data = read_top_subreddit_csv('top_subreddits.csv')
-    comments_data = read_comments_csv('comments.csv')
-    comments_edits_data = read_comments_edits_csv('comments_edition.csv')
+ #  subreddit_data = read_top_subreddit_csv('top_subreddits.csv')
+    subreddit_data = read_csv('top_subreddits.csv', webapp.config.fields_of_top_subreddit_csv)
+#   comments_data = read_comments_csv('comments.csv')
+    comments_data = read_csv('comments.csv', webapp.config.fields_of_comments_csv)
+ #   comments_edits_data = read_comments_edits_csv('comments_edition.csv')
+    comments_edits_data = read_csv('comments_edition.csv', webapp.config.fields_of_comments_edits_csv)
     os.chdir("..")  
     top_subreddits = save_top_subreddit(subreddit_data)
     comments = save_comments(comments_data, top_subreddits)

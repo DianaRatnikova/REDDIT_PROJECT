@@ -2,7 +2,7 @@ import logging
 import requests
 import webapp.config_auth
 
-from webapp.authentication import get_headers
+# from webapp.authentication import get_reddit_auth_headers
 from webapp.print_reddit_data import get_comment_row
 
 def construct_comments_url(result_subreddit: any) -> list:
@@ -15,9 +15,9 @@ def construct_comments_url(result_subreddit: any) -> list:
 
 
 # вытащить топовые посты
-def make_top_subreddit_requests(LIMIT, headers):
+def make_top_subreddit_requests(limit, headers):
 # формирую словарь result_subreddit.json()
-    result_subreddit = requests.get(f'https://oauth.reddit.com/top.json?limit={LIMIT}', headers=headers)
+    result_subreddit = requests.get(f'https://oauth.reddit.com/top.json?limit={limit}', headers=headers)
 
     logging.info("\n------------request for top subreddits was done-----------")
     logging.info(f'{result_subreddit.status_code =}')

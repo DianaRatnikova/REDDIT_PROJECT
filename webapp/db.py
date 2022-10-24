@@ -5,9 +5,10 @@
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import scoped_session, sessionmaker
-
+import webapp.config_auth
 # URL from ElephantSQL, только postgres://  заменить на postgresql://
-engine = create_engine('postgresql://vtfkyays:nICzM7An7TKhf268cBnsmkkLZFkh1eJE@mouse.db.elephantsql.com/vtfkyays')
+# engine = create_engine('postgresql://vtfkyays:nICzM7An7TKhf268cBnsmkkLZFkh1eJE@mouse.db.elephantsql.com/vtfkyays')
+engine = create_engine(webapp.config_auth.CREATE_ENGINE_URL)
 # показываем, к какой БД хотим подсключиться
 db_session = scoped_session(sessionmaker(bind=engine))
 

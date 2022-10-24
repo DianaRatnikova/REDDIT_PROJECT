@@ -2,7 +2,7 @@ import webapp.config_auth
 import requests
 import logging
 
-def log_in_and_get_token():
+def get_reddit_auth_token():
 
     data = {'grant_type': 'password',
         'username': webapp.config_auth.user_name,
@@ -20,8 +20,8 @@ def log_in_and_get_token():
     return TOKEN
 
 
-def get_headers():
-    TOKEN = log_in_and_get_token()
+def get_reddit_auth_headers():
+    TOKEN = get_reddit_auth_token()
 
     logging.info(f"{webapp.config_auth.HEADERS_INFO = }")
     logging.info(f"{TOKEN = }")

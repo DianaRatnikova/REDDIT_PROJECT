@@ -1,4 +1,4 @@
-from webapp.authentication import get_headers
+from webapp.authentication import get_reddit_auth_headers
 import webapp.config_auth
 from webapp.loader import load_data_to_models
 from webapp.models import create_models
@@ -25,11 +25,11 @@ def delete_dir_with_old_results(FOLDER_NAME):
 
 if __name__ == "__main__":
     logging.basicConfig(filename='loginfo.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s', level=logging.INFO)
-    headers = get_headers()
+    headers = get_reddit_auth_headers()
     delete_dir_with_old_results('result_data')
-    LIMIT = int(input("Введите количество топ-новостей: "))
-    logging.info('make_top_subreddit_requests(LIMIT, headers):')
-    result_subreddit = make_top_subreddit_requests(LIMIT, headers)
+    limit= int(input("Введите количество топ-новостей: "))
+    logging.info('make_top_subreddit_requests(limit, headers):')
+    result_subreddit = make_top_subreddit_requests(limit, headers)
     logging.info('make_all_comments_request(result_subreddit, headers)')
     make_all_comments_request(result_subreddit, headers)
     logging.info('construct_comments_url(result_subreddit)')
