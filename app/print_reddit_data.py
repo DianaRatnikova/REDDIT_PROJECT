@@ -1,17 +1,12 @@
 import logging
 import csv
 import os
-import webapp.config_auth
-# from webapp.reddit_requests import construct_comments_url
+import app.config_auth
 
 def mkdir_for_results(FOLDER_NAME):
     if not os.path.isdir(FOLDER_NAME):
         os.mkdir(FOLDER_NAME)
     os.chdir(FOLDER_NAME)
-
-
-def show_all_comments(comments, nesting_of_comment, num_of_file):
-    pass
 
 
 # формирую строчку с данными поста
@@ -29,7 +24,7 @@ def get_top_subreddit_row(top_post, comment_url):
 
 # записываем топ-посты в csv-файл построчно:
 def write_top_subreddit_to_csv(result_subreddit, comments_url_list):
-    mkdir_for_results(webapp.config_auth.FOLDER_NAME)
+    mkdir_for_results(app.config_auth.FOLDER_NAME)
     with open('top_subreddits.csv', 'w', encoding='utf-8') as f:
         writer = csv.writer(f, delimiter=';')
         for (num_of_top_post, top_post) in enumerate(result_subreddit.json()["data"]["children"]):
@@ -59,7 +54,7 @@ def get_comment_row(comments, nesting_of_comment,comments_url):
             edition_num = 0
         comments_edit_row = [comments['id'], comments['body'], int(edition_num),comments_url]
         
-        mkdir_for_results(webapp.config_auth.FOLDER_NAME)
+        mkdir_for_results(app.config_auth.FOLDER_NAME)
         with open('comments.csv', 'a', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=';')
             writer.writerow(comment_row)
