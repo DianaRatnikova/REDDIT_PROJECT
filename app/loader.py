@@ -6,8 +6,8 @@ import app.config
 import app.config_auth
 from app.db import db_session
 from app.print_reddit_data import mkdir_for_results
-from app.models import Subreddit, Comment, CommentEdition
-
+from app.models import Subreddit, Comment, CommentEdition, LoadingInfo
+import datetime
 
 def read_csv(filename, fields):
     with open(filename, 'r', encoding='utf-8') as f:
@@ -19,7 +19,7 @@ def read_csv(filename, fields):
 def save_top_subreddit(all_data):
     processed = []
     top_subreddit_unique = []
-
+    top_subreddit = {}
     query_url = db_session.query(Subreddit.url_subreddit).distinct()
     urls = []
     for url_addr in query_url:
@@ -28,6 +28,7 @@ def save_top_subreddit(all_data):
     print("urls = ", '\n'.join(urls))
 
     for row in all_data:
+        subreddit_loaded = 'False'
         if row['url_subreddit'] not in processed:
             top_subreddit = {'subreddit': row['subreddit'],
                             'author_subreddit': row['author_subreddit'],
@@ -38,10 +39,13 @@ def save_top_subreddit(all_data):
             if not urls or top_subreddit['url_subreddit'] not in urls:
                 top_subreddit_unique.append(top_subreddit)
                 processed.append(top_subreddit['url_subreddit'])
+                subreddit_loaded = 'True'
 # return_defaults=True говорит bulk_insert_mappings, 
 # что когда база присвоит компаниям id, их нужно добавить в top_subreddit_unique.
     db_session.bulk_insert_mappings(Subreddit, top_subreddit_unique, return_defaults=True)
     db_session.commit()
+    top_subreddit_unique[0]['subreddit_loaded'] = subreddit_loaded
+
     return top_subreddit_unique
 
 
@@ -53,6 +57,11 @@ def get_top_subreddit_id(url_subreddit, top_subreddit_unique):
             return row['id']
     return None
 
+def get_comment_id(identificator, comments_unique):
+    for row in comments_unique:
+        if row['identificator'] == identificator:
+            return row['id']
+    return None
 
 def save_comments(all_data, top_subreddit_unique):
     processed = []
@@ -102,7 +111,9 @@ def save_comments_edits(all_data,top_subreddit_unique):
             comment_edit = {'body': row['body'], 'mood': '', 'identificator_comment': row['identificator_comment'],
             'edition_num': row['edition_num'],'url_comment': row['url_comment'],
             }
+
             comment_edit['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
+            comment_edit['comment_id'] = get_comment_id(row['identificator_comment'], top_subreddit_unique)
 
             if not identificators:
                     comments_edits_unique.append(comment_edit)
@@ -121,11 +132,14 @@ def save_comments_edits(all_data,top_subreddit_unique):
     return comments_edits_unique
 
 
-def get_comment_id(identificator, comments_unique):
-    for row in comments_unique:
-        if row['identificator'] == identificator:
-            return row['id']
-    return None
+def save_loading_info(top_subreddits,comments_edits):
+    loading_info = {"date_loaded": datetime.now(), "subreddit_loaded": top_subreddits['subreddit_loaded'],
+                        "subreddit_id": top_subreddits['id'], "comment_edition_id": comments_edits['id'],
+                    "comment_id": comments_edits['comment_id']
+    }
+    db_session.bulk_insert_mappings(LoadingInfo, loading_info, return_defaults=True)
+    db_session.commit()
+
 
 
 def make_comment_id_dict(identificator, comments_unique):
@@ -152,6 +166,7 @@ def load_data_to_models():
     comments = save_comments(comments_data, top_subreddits)
     logging.info('Saving comments_edits to database...')
     comments_edits = save_comments_edits(comments_edits_data,top_subreddits)
-
+    logging.info('Saving loaded_data to database...')
+    loaded_data = save_loading_info(top_subreddits,comments_edits)
 if __name__ == '__main__':
     load_data_to_models()

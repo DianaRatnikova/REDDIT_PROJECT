@@ -10,7 +10,7 @@ config_auth.py
 *.csv
 result_data/
 models_main.py
-
+to-do.md
 # C extensions
 *.so
 

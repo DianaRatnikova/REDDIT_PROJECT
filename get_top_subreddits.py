@@ -1,9 +1,9 @@
-from webapp.authentication import get_reddit_auth_headers
-import webapp.config_auth
-from webapp.loader import load_data_to_models
-from webapp.models import create_models
-from webapp.print_reddit_data import write_top_subreddit_to_csv
-from webapp.reddit_requests import make_top_subreddit_requests, make_all_comments_request, construct_comments_url
+from app.authentication import get_reddit_auth_headers
+import app.config_auth
+from app.loader import load_data_to_models
+from app.models import create_models
+from app.print_reddit_data import write_top_subreddit_to_csv
+from app.reddit_requests import make_top_subreddit_requests, make_all_comments_request, construct_comments_url
 import logging
 import os
 
