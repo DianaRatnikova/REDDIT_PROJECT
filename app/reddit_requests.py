@@ -1,3 +1,4 @@
+from sqlalchemy import true
 import app.config_auth
 from app.print_reddit_data import get_comment_row
 import logging
@@ -22,16 +23,20 @@ def make_top_subreddit_requests(limit, headers):
 
 
 # разбор странички с комментариями
-def make_one_comment_request(comments_url, num_of_file, headers):
-    result_comments = requests.get(f'{comments_url}', headers=headers)
+def make_one_comment_request(comment_url, num_of_file, headers):
+    result_comments = requests.get(f'{comment_url}', headers=headers)
     # нулевой элемент списка содержит инфу о посте, первый - все комменты
     comment_json = result_comments.json()[1]['data']['children']
     logging.info(f'Number of comments for post {num_of_file+1}: {len(comment_json)}')
-    for comment_for_top_post in comment_json:
-        get_comment_row(comment_for_top_post['data'], 0, comments_url)
+    return comment_json
 
+def write_comments_to_csv(comments_url, comment_json: list):
+    if comment_json is not None:
+        for comment_for_top_post in comment_json:
+            get_comment_row(comment_for_top_post['data'], 0, comments_url)
 
 def make_all_comments_request(result_subreddit, headers):
     comments_url_list = construct_comments_url(result_subreddit)
     for (num_of_file, comment_url) in enumerate(comments_url_list):
-        make_one_comment_request(comment_url, num_of_file, headers)
+        comment_json = make_one_comment_request(comment_url, num_of_file, headers)
+        write_comments_to_csv(comment_url, comment_json)

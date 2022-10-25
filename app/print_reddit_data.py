@@ -62,7 +62,7 @@ def get_comment_row(comments, nesting_of_comment,comments_url):
         with open('comments_edition.csv', 'a', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=';')
             writer.writerow(comments_edit_row)    
-        os.chdir("..")  
+        os.chdir("..")
         
         author = comments['author']
 
