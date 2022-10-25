@@ -6,7 +6,7 @@ from sqlalchemy.orm import relationship
 
 
 class Subreddit(Base):
-    #название таблицы не должно совпадать с именем класса!!
+    # название таблицы не должно совпадать с именем класса!!
     __tablename__ = 'subreddits'
     id = Column(Integer, primary_key=True)
     subreddit = Column(String)
@@ -64,7 +64,8 @@ class LoadingInfo(Base):
     comment_id = Column(Integer, ForeignKey(Comment.id), index=True, nullable=False)
     comment_edition_id = Column(Integer, ForeignKey(CommentEdition.id), index=True, nullable=False)
     subreddit_loaded = Column(Boolean)
-    date_loaded = Column(DateTime, default=datetime.datetime.utcnow)
+   # date_loaded = Column(DateTime, default=datetime.datetime.utcnow)
+    date_loaded = Column(String)
     top_subreddits = relationship("Subreddit", lazy="joined")
     comment_edition = relationship("CommentEdition", lazy="joined")
     comments = relationship("Comment", lazy="joined")
