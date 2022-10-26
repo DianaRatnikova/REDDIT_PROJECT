@@ -52,18 +52,17 @@ def get_comment_row(comments, nesting_of_comment,comments_url):
         edition_num = comments['edited']
         if not edition_num:
             edition_num = 0
-        comments_edit_row = [comments['id'], comments['body'], int(edition_num),comments_url]
-        
+        comments_edit_row = [comments['id'], comments['author'], comments['body'], int(edition_num),comments_url, nesting_of_comment]
+    
+    #    with open('comments.csv', 'a', encoding='utf-8') as f:
+    #        writer = csv.writer(f, delimiter=';')
+    #        writer.writerow(comment_row)
         mkdir_for_results(app.config_auth.FOLDER_NAME)
-        with open('comments.csv', 'a', encoding='utf-8') as f:
-            writer = csv.writer(f, delimiter=';')
-            writer.writerow(comment_row)
-        
         with open('comments_edition.csv', 'a', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=';')
             writer.writerow(comments_edit_row)    
         os.chdir("..")
-        
+    # зачем это?    
         author = comments['author']
 
     if 'replies' in comments:

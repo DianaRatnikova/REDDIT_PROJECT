@@ -11,6 +11,9 @@ config_auth.py
 result_data/
 models_main.py
 to-do.md
+loader2.py
+models2.py
+
 # C extensions
 *.so
 
