@@ -15,7 +15,6 @@ def read_csv(filename, fields):
         subreddit_data = list(reader)
         return subreddit_data
 
-
 def save_top_subreddit(all_data):
     processed = []
     top_subreddit_unique = []
@@ -34,14 +33,15 @@ def save_top_subreddit(all_data):
                             'author_subreddit': row['author_subreddit'],
                             'url_subreddit': row['url_subreddit'], 
                             'title': row['title'], 
+                            'edition_num': row['edition_num']
                             }
 
-            
             processed.append(top_subreddit['url_subreddit'])
             subreddit_loaded = 0  #'False'
             if not urls or top_subreddit['url_subreddit'] not in urls:
                 subreddit_loaded = 1 #'True'
                 top_subreddit_unique.append(top_subreddit)
+  
 
     logging.info(f"{top_subreddit_unique = }")
 
@@ -68,7 +68,7 @@ def get_comment_id(identificator, comments_unique):
             return row['id']
     return None
 
-def save_comments(all_data, top_subreddit_unique):
+def save_comments(all_data):
     processed = []
     comments_unique = []
 
@@ -83,6 +83,8 @@ def save_comments(all_data, top_subreddit_unique):
     for num in query_num:
         numbers_of_edition.append(num[0])    
 
+    query_url = db_session.query(Subreddit.url_subreddit).distinct() 
+    
     edit_dict = {}
     for id in identificators:
         query_num_edit = db_session.query(Comment.edition_num).filter(Comment.identificator == id)   #.distinct()
@@ -102,7 +104,8 @@ def save_comments(all_data, top_subreddit_unique):
                         'edition_num': row['edition_num'],
                         'nesting': row['nesting'],
               }
-            comment['top_subreddit_id'] = get_top_subreddit_id(row['url_comment'], top_subreddit_unique)
+
+            comment['top_subreddit_id'] = db_session.query(Subreddit.id).filter(Subreddit.url_subreddit == comment['url_comment']).first()[0]
             processed.append(row['identificator'])
 
 # Новый комент
@@ -132,7 +135,7 @@ def make_comment_id_dict(identificator, comments_unique):
 def load_data_to_models():
     logging.info('Reading csv files...')
     mkdir_for_results(app.config_auth.FOLDER_NAME)
-    subreddit_data = read_csv(app.config.filename_top_subreddits, app.config.fields_of_top_subreddit_csv)
+    subreddit_data = read_csv(app.config.filename_subreddits, app.config.fields_of_one_subreddit_csv)
     comments_edits_data = read_csv(app.config.filename_comments_edition, app.config.fields_of_comments_edits_csv)
     os.chdir("..")
     logging.info('End reading')  
@@ -140,7 +143,6 @@ def load_data_to_models():
     logging.info('Saving subreddits to database...')
     top_subreddits = save_top_subreddit(subreddit_data)
     logging.info('Saving comments to database...')
-    comments = save_comments(comments_edits_data, top_subreddits)
-
+    comments = save_comments(comments_edits_data)
 if __name__ == '__main__':
     load_data_to_models()
