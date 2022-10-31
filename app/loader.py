@@ -15,6 +15,7 @@ def read_csv(filename, fields):
         subreddit_data = list(reader)
         return subreddit_data
 
+
 def save_top_subreddit(all_data):
     processed = []
     top_subreddit_unique = []
@@ -107,7 +108,6 @@ def save_comments(all_data):
 
             comment['top_subreddit_id'] = db_session.query(Subreddit.id).filter(Subreddit.url_subreddit == comment['url_comment']).first()[0]
             processed.append(row['identificator'])
-
 # Новый комент
         if not identificators or comment['identificator'] not in identificators:
             comments_unique.append(comment)

@@ -9,7 +9,7 @@ def construct_comments_url(result_subreddit: any) -> list:
     comments_url_list = []
     for post in result_subreddit.json()["data"]["children"]:
         comments_url = app.config_auth.CONST_URL + post['data']['permalink']
-        comments_url = comments_url[:-1]+'.json'  # сформирована ссылка на комменты
+        comments_url = comments_url[:-1]+'.json?sort=new'  # сформирована ссылка на комменты
         comments_url_list.append(comments_url)
     return comments_url_list
 
@@ -39,10 +39,12 @@ def make_one_comment_request(comment_url, num_of_file, headers):
     return comment_json
 
 def write_comments_to_csv(comments_url, comment_json: list):
+    comment_edits_list = []
     if comment_json is not None:
         for comment_for_top_post in comment_json:
-            get_comment_row(comment_for_top_post['data'], 0, comments_url)
-
+            comments_edit_row = get_comment_row(comment_for_top_post['data'], 0, comments_url)
+            comment_edits_list.append(comments_edit_row)
+    return comment_edits_list
 
 def make_all_comments_request(result_subreddit, headers):
     comments_url_list = construct_comments_url(result_subreddit)

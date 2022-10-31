@@ -24,14 +24,15 @@ def get_top_subreddit_row(top_post, comment_url):
 
 # формирую строчку с данными поста
 def get_one_subreddit_row(top_post, comment_url):
-    edition_num = top_post['edited']
+    logging.info(f"{top_post = }")
+    edition_num = top_post['data']['edited']
     if not edition_num:
         edition_num = 0
 
     top_post_info = {
-                    'subreddit': top_post["subreddit"],
-                    'author': top_post["author"],
-                    'title': top_post["title"],
+                    'subreddit': top_post['data']["subreddit"],
+                    'author': top_post['data']["author"],
+                    'title': top_post['data']["title"],
                     'url': comment_url,
                     'edited': edition_num
                     }
@@ -58,7 +59,7 @@ def write_one_subreddit_to_csv(comments_url, one_subreddit_json: list):
     if one_subreddit_json is not None:
         mkdir_for_results(app.config_auth.FOLDER_NAME)
         for one_subreddit in one_subreddit_json:
-            subreddit_row = get_one_subreddit_row(one_subreddit['data'], comments_url)
+            subreddit_row = get_one_subreddit_row(one_subreddit, comments_url)
             print(f"{subreddit_row = }")
             with open('subreddits.csv', 'a', encoding='utf-8') as f:
                 writer = csv.writer(f, delimiter=';')
@@ -88,16 +89,12 @@ def get_comment_row(comments, nesting_of_comment,comments_url):
             edition_num = 0
         comments_edit_row = [comments['id'], comments['author'], comments['body'], int(edition_num),comments_url, nesting_of_comment]
     
-    #    with open('comments.csv', 'a', encoding='utf-8') as f:
-    #        writer = csv.writer(f, delimiter=';')
-    #        writer.writerow(comment_row)
         mkdir_for_results(app.config_auth.FOLDER_NAME)
         with open('comments_edition.csv', 'a', encoding='utf-8') as f:
             writer = csv.writer(f, delimiter=';')
             writer.writerow(comments_edit_row)    
         os.chdir("..")
-    # зачем это?    
-        author = comments['author']
+        return comments_edit_row      
 
     if 'replies' in comments:
         if comments['replies'] == '':

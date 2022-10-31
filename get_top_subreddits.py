@@ -4,6 +4,7 @@ from app.loader import load_data_to_models
 from app.models import create_models
 from app.print_reddit_data import write_one_subreddit_to_csv
 from app.reddit_requests import make_top_subreddit_requests, make_all_comments_request, construct_comments_url
+from app.show_comments import show_comments
 import logging
 import os
 from app.loader_renew import renew_subreddit, renew_comments
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     headers = get_reddit_auth_headers()
     delete_dir_with_old_results('result_data')
 
-    menu = int(input("1 - загрузить новые данные в БД, 2 - обновить изменения: "))
+    menu = int(input("1 - загрузить новые данные в БД, 2 - обновить изменения, 3 - вывести актуальные комментарии "))
     
     if menu == 1:
         logging.info('<Loading new data to DB>')
@@ -45,7 +46,7 @@ if __name__ == "__main__":
         create_models()
         logging.info('Loader data to tables  top_subreddits and comments')
         load_data_to_models()
-    else:
+    elif menu == 2:
         logging.info('<Renewal>')
         print("Запрос на обновление")
         logging.info('Checking database: top_subreddits and comments')
@@ -55,3 +56,8 @@ if __name__ == "__main__":
         renew_subreddit(headers)
         logging.info('renew_comments')
         renew_comments(headers)
+    else:
+        logging.info('<Actual comments>')
+        print("Актуальные комментарии")
+        create_models()
+        show_comments()
