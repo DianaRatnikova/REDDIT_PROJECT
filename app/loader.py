@@ -77,7 +77,6 @@ def save_comments(all_data):
     identificators = []
     for id in query_id:
         identificators.append(id[0])
-    # print(f"{identificators = }")
 
     query_num = db_session.query(Comment.edition_num).distinct()
     numbers_of_edition = []

@@ -82,7 +82,7 @@ def renew_subreddit(headers):
 
         if one_subreddit_json is not None:
             for one_subreddit in one_subreddit_json:
-                subreddit_row = get_one_subreddit_row(one_subreddit['data'], url)
+                subreddit_row = get_one_subreddit_row(one_subreddit, url)
 
             top_subreddit = make_top_subreddit_dict(subreddit_row)
             num_edit_list = get_edit_nums_from_db(url)
